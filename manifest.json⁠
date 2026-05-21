@@ -1,0 +1,13 @@
+{
+  "name": "Lift Tracker",
+  "short_name": "LiftApp",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#007bff",
+  "icons": [{
+    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Dumbbell_icon.svg/512px-Dumbbell_icon.svg.png",
+    "sizes": "512x512",
+    "type": "image/png"
+  }]
+}
