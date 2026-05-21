@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Lift Tracker</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Dumbbell_icon.svg/512px-Dumbbell_icon.svg.png">
+  <style>
+    body { font-family: system-ui; background: #121212; color: #fff; padding: 20px; }
+    input, button { width: 100%; padding: 14px; margin: 8px 0; border-radius: 8px; border: none; font-size: 16px; box-sizing: border-box; }
+    input { background: #2a2a2a; color: white; }
+    button { background: #007bff; color: white; font-weight: bold; cursor: pointer; }
+    .btn-green { background: #28a745; }
+    .card { background: #1e1e1e; padding: 15px; border-radius: 8px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h2>Track Session</h2>
+  <input type="text" id="workoutName" placeholder="Workout (e.g., Back & Biceps)">
+  <input type="text" id="notes" placeholder="Notes (e.g., Creatine, Whey protein)">
+  
+  <button onclick="saveWorkout()">Log Workout</button>
+  <button class="btn-green" onclick="requestPermissions()">Enable Notifications</button>
+  
+  <div id="history"></div>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+
+    function saveWorkout() {
+      const name = document.getElementById('workoutName').value;
+      const notes = document.getElementById('notes').value;
+      if (!name) return;
+      
+      const history = JSON.parse(localStorage.getItem('workouts') || '[]');
+      history.unshift({ date: new Date().toLocaleDateString(), name, notes });
+      localStorage.setItem('workouts', JSON.stringify(history));
+      
+      document.getElementById('workoutName').value = '';
+      document.getElementById('notes').value = '';
+      loadHistory();
+    }
+
+    function loadHistory() {
+      const history = JSON.parse(localStorage.getItem('workouts') || '[]');
+      document.getElementById('history').innerHTML = history.map(w => 
+        `<div class="card"><strong>${w.name}</strong> <small>(${w.date})</small><br>${w.notes}</div>`
+      ).join('');
+    }
+
+    function requestPermissions() {
+      Notification.requestPermission().then(perm => {
+        if (perm === 'granted') {
+          new Notification('Setup Complete', { body: 'Ready to track your lifts offline.' });
+        } else {
+          alert('Notification permission denied.');
+        }
+      });
+    }
+
+    loadHistory();
+  </script>
+</body>
+</html>
